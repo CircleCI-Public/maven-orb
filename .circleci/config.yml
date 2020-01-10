@@ -28,7 +28,10 @@ jobs:
     executor: orb-tools/ubuntu
     steps:
       - checkout
-    # - your-orb/your-orb-command
+      - run:
+          name: "Test Maven Command"
+          command: |
+            echo "TODO: This job should ensure the maven commands and test jobs are working properly. Please consider creating a PR to create these tests."
 
 workflows:
   # This `lint-pack_validate_publish-dev` workflow will run on any commit.

@@ -1,0 +1,13 @@
+description: >
+  Use parameters to run custom Maven commands. In the example below we are running maven verify with debug mode enabled.
+usage:
+  version: 2.1
+
+  orbs:
+    maven: circleci/maven@x.y
+
+  workflows:
+    maven_test:
+      jobs:
+        - maven/test:
+            command: -X verify

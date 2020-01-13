@@ -5,7 +5,7 @@ docker:
   - image: 'cimg/openjdk:<<parameters.tag>>'
 parameters:
   tag:
-    default: "13"
+    default: "13.0"
     description: |
       Can be changed to any of the available tags listed on the DockerHub for this image.
       https://hub.docker.com/r/cimg/openjdk/tags

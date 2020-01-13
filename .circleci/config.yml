@@ -31,10 +31,7 @@ jobs:
       - run:
           name: "Does executor have Maven installed?"
           command: |
-            if ! [ -x "$(command -v mvn)" ]; then
-              echo 'MVN does not appear to be installed. Has the executor changed?.' >&2
-              exit 1
-            fi
+            mvn -v
       - run:
           name: "Test Maven Command"
           command: |

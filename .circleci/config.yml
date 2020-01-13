@@ -25,9 +25,16 @@ jobs:
   # Rename this job and add more as needed.
   #
   integration-test-1:
-    executor: orb-tools/ubuntu
+    executor: maven/default
     steps:
       - checkout
+      - run:
+          name: "Does executor have Maven installed?"
+          command: |
+            if ! [ -x "$(command -v mvn)" ]; then
+              echo 'MVN does not appear to be installed. Has the executor changed?.' >&2
+              exit 1
+            fi
       - run:
           name: "Test Maven Command"
           command: |

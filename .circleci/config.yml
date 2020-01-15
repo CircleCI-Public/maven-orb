@@ -29,9 +29,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Does executor have Maven installed?"
+          name: Check if Maven is installed
           command: |
-            mvn -v
+            if [[ $(command -v mvn) == "" ]]; then
+              echo " Maven is not installed "; exit 1;
+            else
+              echo Maven successfully installed.
+            fi
       - run:
           name: "Test Maven Command"
           command: |

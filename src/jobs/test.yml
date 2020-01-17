@@ -5,7 +5,7 @@ parameters:
   executor:
     description: The name of custom executor to use
     type: executor
-    default: maven
+    default: default
   command:
     description: The maven command to run.
     type: string

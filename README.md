@@ -1,15 +1,18 @@
 # maven Orb [![CircleCI Build Status](https://circleci.com/gh/CircleCI-Public/maven-orb.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/CircleCI-Public/maven-orb) [![CircleCI Orb Version](https://img.shields.io/badge/endpoint.svg?url=https://badges.circleci.io/orb/circleci/maven)](https://circleci.com/orbs/registry/orb/circleci/maven) [![GitHub License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/CircleCI-Public/maven-orb/master/LICENSE) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/ecosystem/orbs)
 
-A description of your orb. Utilize this orb to easily add X to your CI/CD pipeline.
+Simplify common tasks for building and testing Java projects using Maven on CircleCI. Your entire CircleCI config could look like this:
 
-**TODO:**
-Publish your production orb! You may notice the badges above and links to the registry page below are not working yet, once you publish your first production version orb, these will begin to function.
+```
+version: 2.1
+orbs:
+  maven: circleci/maven@x.y
+workflows:
+  maven_test:
+    jobs:
+      - maven/test
+```
 
-What to do:
-* Make changes to your `Alpha` branch.
-* Flush out your integration test jobs
-* Merge to `master` with "`[semver:major]`" in the commit subject to publish 1.0.0 of your orb.
-
+The built in test job is automatically compatible with standard Maven projects and is fully customizable with custom steps.
 
 ## Usage
 

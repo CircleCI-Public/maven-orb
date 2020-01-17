@@ -81,7 +81,7 @@ workflows:
       # an example job
       - integration-test-1
       - maven/test:
-          working_directory: ./sample_app
+          app_src_directory: sample_app
 
       # publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"

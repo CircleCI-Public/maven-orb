@@ -38,14 +38,14 @@ steps:
       steps:
         - run:
             name: Install Dependencies
-            working_directory: $CIRCLE_WORKING_DIRECTORY/<< parameters.app_src_directory >>
+            working_directory: << parameters.app_src_directory >>
             command: << parameters.maven_command >> dependency:go-offline --settings '<< parameters.settings_file >>'
   - unless:
       condition: << parameters.settings_file >>
       steps:
         - run:
             name: Install Dependencies
-            working_directory: $CIRCLE_WORKING_DIRECTORY/<< parameters.app_src_directory >>
+            working_directory: << parameters.app_src_directory >>
             command: << parameters.maven_command >> dependency:go-offline
   - steps: << parameters.steps >>
   - save_cache:

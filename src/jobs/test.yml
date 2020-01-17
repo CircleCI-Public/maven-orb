@@ -31,6 +31,7 @@ steps:
   - checkout
   - with_cache:
       settings_file: << parameters.settings_file >>
+      app_src_directory: << parameters.app_src_directory >>
       steps:
         - when:
             condition: << parameters.settings_file >>

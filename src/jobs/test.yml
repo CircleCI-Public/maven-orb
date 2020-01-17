@@ -39,13 +39,13 @@ steps:
               - run:
                   name: Run Tests
                   working_directory: << parameters.app_src_directory >>
-                  command: pwd; << parameters.maven_command >> << parameters.command >> --settings '<< parameters.settings_file >>';
+                  command: << parameters.maven_command >> << parameters.command >> --settings '<< parameters.settings_file >>';
         - unless:
             condition: << parameters.settings_file >>
             steps:
               - run:
                   name: Run Tests
                   working_directory: << parameters.app_src_directory >>
-                  command: pwd; << parameters.maven_command >> << parameters.command >>;
+                  command: << parameters.maven_command >> << parameters.command >>;
   - process_test_results:
       test_results_path: << parameters.test_results_path >>

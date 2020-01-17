@@ -7,6 +7,10 @@ parameters:
     description: The name of custom executor to use
     type: executor
     default: default
+  app_src_directory:
+    description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
+    type: string
+    default: ''
   command:
     description: The maven command to run.
     type: string
@@ -77,6 +81,7 @@ steps:
       path: .circleci/tests/
   - with_cache:
       settings_file: << parameters.settings_file >>
+      app_src_directory: << parameters.app_src_directory >>
       steps:
         - when:
             condition: << parameters.settings_file >>
@@ -89,6 +94,7 @@ steps:
             steps:
               - run:
                   name: Run Tests
+                  app_src_directory: << parameters.app_src_directory >>
                   command: << parameters.maven_command >> << parameters.command >> -Dsurefire.excludesFile=.circleci/tests/surefire_classnames_ignore_list -Dfailsafe.excludesFile=.circleci/tests/failsafe_classnames_ignore_list
   - process_test_results:
       test_results_path: << parameters.test_results_path >>

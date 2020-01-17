@@ -81,6 +81,7 @@ workflows:
       # an example job
       - integration-test-1
       - maven/test:
+          test_results_path: sample_app/target/surefire-reports
           app_src_directory: sample_app
 
       # publish a semver version of the orb. relies on

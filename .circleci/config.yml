@@ -36,10 +36,6 @@ jobs:
             else
               echo Maven successfully installed.
             fi
-      - run:
-          name: "Test Maven Command"
-          command: |
-            echo "TODO: This job should ensure the maven commands and test jobs are working properly. Please consider creating a PR to create these tests."
 
 workflows:
   # This `lint-pack_validate_publish-dev` workflow will run on any commit.
@@ -84,6 +80,8 @@ workflows:
 
       # an example job
       - integration-test-1
+      - maven/test:
+          working_directory: ./sample_app
 
       # publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"
@@ -101,6 +99,7 @@ workflows:
           publish-version-tag: false
           requires:
             - integration-test-1
+            - maven/test
           filters:
             branches:
               only: master

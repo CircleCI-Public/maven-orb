@@ -26,13 +26,17 @@ parameters:
     description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
     type: string
     default: ''
+  cache_key:
+    description: Add a custom suffix to your cache key in the event you need to work with multiple maven caches.
+    type: string
+    default: 'v1'
 steps:
   - run:
       name: Generate Cache Checksum
       working_directory: $CIRCLE_WORKING_DIRECTORY/<< parameters.app_src_directory >>
       command: find . -name 'pom.xml' | sort | xargs cat > /tmp/maven_cache_seed
   - restore_cache:
-      key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+      key: maven-<< parameters.cache_key>>-{{ checksum "/tmp/maven_cache_seed" }}
   - when:
       condition: << parameters.settings_file >>
       steps:
@@ -51,4 +55,4 @@ steps:
   - save_cache:
       paths:
         - ~/.m2
-      key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+      key: maven-<< parameters.cache_key>>-{{ checksum "/tmp/maven_cache_seed" }}

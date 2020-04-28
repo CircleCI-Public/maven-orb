@@ -6,6 +6,11 @@ orbs:
   maven: circleci/maven@dev:alpha
   orb-tools: circleci/orb-tools@9.0
 
+executors:
+  machine:
+    machine:
+      image: ubuntu-1604:202004-01
+
 # Pipeline parameters
 parameters:
   # These pipeline parameters are required by the "trigger-integration-tests-workflow"
@@ -83,8 +88,15 @@ workflows:
       # an example job
       - integration-test-1
       - maven/test:
+          name: test-without-settings
           test_results_path: sample_app/target/surefire-reports
           app_src_directory: sample_app
+      - maven/test:
+          name: test-with-settings
+          executor: machine
+          test_results_path: sample_app/target/surefire-reports
+          app_src_directory: sample_app
+          settings_file: $M2_HOME/conf/settings.xml
 
       # publish a semver version of the orb. relies on
       # the commit subject containing the text "[semver:patch|minor|major|skip]"
@@ -102,7 +114,8 @@ workflows:
           publish-version-tag: false
           requires:
             - integration-test-1
-            - maven/test
+            - test-with-settings
+            - test-without-settings
           filters:
             branches:
               only: master

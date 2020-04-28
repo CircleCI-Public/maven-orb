@@ -13,9 +13,9 @@ description: |
   present in the `working_directory`.
 parameters:
   settings_file:
-        description: Specify a custom settings file to use (optional)
-        type: string
-        default: pom.xml
+    description: Specify a custom settings file to use (optional)
+    type: string
+    default: ""
   steps:
     type: steps
   maven_command:
@@ -33,20 +33,14 @@ steps:
       command: find . -name 'pom.xml' | sort | xargs cat > /tmp/maven_cache_seed
   - restore_cache:
       key: maven-{{ checksum "/tmp/maven_cache_seed" }}
-  - when:
-      condition: << parameters.settings_file >>
-      steps:
-        - run:
-            name: Install Dependencies
-            working_directory: << parameters.app_src_directory >>
-            command: << parameters.maven_command >> dependency:go-offline --settings '<< parameters.settings_file >>'
-  - unless:
-      condition: << parameters.settings_file >>
-      steps:
-        - run:
-            name: Install Dependencies
-            working_directory: << parameters.app_src_directory >>
-            command: << parameters.maven_command >> dependency:go-offline
+  - run:
+      name: Install Dependencies
+      working_directory: << parameters.app_src_directory >>
+      command: |
+        if [ -n "<< parameters.settings_file >>" ]; then
+          set -- "$@" --settings "<< parameters.settings_file >>"
+        fi
+        << parameters.maven_command >> dependency:go-offline "$@"
   - steps: << parameters.steps >>
   - save_cache:
       paths:

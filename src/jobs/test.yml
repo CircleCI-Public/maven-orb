@@ -21,7 +21,7 @@ parameters:
   settings_file:
     description: Specify a custom settings file to use (optional)
     type: string
-    default: pom.xml
+    default: ""
   maven_command:
     description: Specify a custom path for invoking maven
     type: string
@@ -33,19 +33,13 @@ steps:
       settings_file: << parameters.settings_file >>
       app_src_directory: << parameters.app_src_directory >>
       steps:
-        - when:
-            condition: << parameters.settings_file >>
-            steps:
-              - run:
-                  name: Run Tests
-                  working_directory: << parameters.app_src_directory >>
-                  command: << parameters.maven_command >> << parameters.command >> --settings '<< parameters.settings_file >>';
-        - unless:
-            condition: << parameters.settings_file >>
-            steps:
-              - run:
-                  name: Run Tests
-                  working_directory: << parameters.app_src_directory >>
-                  command: << parameters.maven_command >> << parameters.command >>;
+        - run:
+            name: Run Tests
+            working_directory: << parameters.app_src_directory >>
+            command: |
+              if [ -n "<< parameters.settings_file >>" ]; then
+                set -- "$@" --settings "<< parameters.settings_file >>"
+              fi
+              << parameters.maven_command >> << parameters.command >> "$@"
   - process_test_results:
       test_results_path: << parameters.test_results_path >>

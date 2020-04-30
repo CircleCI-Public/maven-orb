@@ -3,7 +3,7 @@ version: 2.1
 # add your orb below, to be used in integration tests (note: a @dev:alpha
 # release must exist.);
 orbs:
-  maven: circleci/maven@dev:alpha
+  maven: circleci/maven@<<pipeline.parameters.dev-orb-version>>
   orb-tools: circleci/orb-tools@9.0
 
 executors:
@@ -111,7 +111,8 @@ workflows:
           bot-token-variable: GHI_TOKEN
           bot-user: cpe-bot
           fail-if-semver-not-indicated: true
-          publish-version-tag: false
+          publish-version-tag: true
+          ssh-fingerprints: fd:16:fb:43:c3:5b:19:b4:73:5c:4d:bc:02:35:04:b4
           requires:
             - integration-test-1
             - test-with-settings

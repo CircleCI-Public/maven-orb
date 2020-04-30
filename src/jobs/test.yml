@@ -26,12 +26,17 @@ parameters:
     description: Specify a custom path for invoking maven
     type: string
     default: mvn
+  fetch_depenencies_command:
+    description: Specify the command used to fetch dependencies.
+    type: string
+    default: "dependency:go-offline"
 
 steps:
   - checkout
   - with_cache:
       settings_file: << parameters.settings_file >>
       app_src_directory: << parameters.app_src_directory >>
+      fetch_depenencies_command: << parameters.settings_fetch_depenencies_command >>
       steps:
         - run:
             name: Run Tests

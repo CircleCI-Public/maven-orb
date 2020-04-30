@@ -26,6 +26,10 @@ parameters:
     description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
     type: string
     default: ''
+  fetch_depenencies_command:
+    description: Specify the command used to fetch dependencies.
+    type: string
+    default: "dependency:go-offline"
 steps:
   - run:
       name: Generate Cache Checksum
@@ -40,7 +44,7 @@ steps:
         if [ -n "<< parameters.settings_file >>" ]; then
           set -- "$@" --settings "<< parameters.settings_file >>"
         fi
-        << parameters.maven_command >> dependency:go-offline "$@"
+        << parameters.maven_command >> <<parameters.fetch_depenencies_command>> "$@"
   - steps: << parameters.steps >>
   - save_cache:
       paths:

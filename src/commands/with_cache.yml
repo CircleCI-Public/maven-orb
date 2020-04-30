@@ -44,7 +44,7 @@ steps:
         if [ -n "<< parameters.settings_file >>" ]; then
           set -- "$@" --settings "<< parameters.settings_file >>"
         fi
-        << parameters.maven_command >> <<parameters.fetch_depenencies_command>> "$@"
+        << parameters.maven_command >> << parameters.fetch_depenencies_command >> "$@"
   - steps: << parameters.steps >>
   - save_cache:
       paths:

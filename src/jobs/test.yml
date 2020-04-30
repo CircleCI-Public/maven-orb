@@ -36,7 +36,7 @@ steps:
   - with_cache:
       settings_file: << parameters.settings_file >>
       app_src_directory: << parameters.app_src_directory >>
-      fetch_depenencies_command: << parameters.settings_fetch_depenencies_command >>
+      fetch_depenencies_command: << parameters.fetch_depenencies_command >>
       steps:
         - run:
             name: Run Tests

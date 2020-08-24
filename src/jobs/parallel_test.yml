@@ -82,6 +82,7 @@ steps:
   - with_cache:
       settings_file: << parameters.settings_file >>
       app_src_directory: << parameters.app_src_directory >>
+      maven_command: << parameters.maven_command >>
       steps:
         - run:
             name: Run Tests

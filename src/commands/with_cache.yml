@@ -6,7 +6,7 @@ description: |
   saved by a previous build. The provided `steps` parameter will then be executed, and
   if successful, then a fresh cache will be saved, if required.
 
-  The contents of the `~/.m2` directory is cached, which will substantially
+  The contents of the `~/.m2/repository` directory is cached, which will substantially
   improve build times for projects with many dependencies.
 
   The cache-key is generated from any files named `pom.xml` that are
@@ -44,5 +44,5 @@ steps:
   - steps: << parameters.steps >>
   - save_cache:
       paths:
-        - ~/.m2
+        - ~/.m2/repository
       key: maven-{{ checksum "/tmp/maven_cache_seed" }}

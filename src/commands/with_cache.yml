@@ -26,7 +26,7 @@ parameters:
     description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
     type: string
     default: ''
-  verify_dependenceis:
+  verify_dependencies:
     description: Verify dependencies are valid and available from pubic sources
     type: boolean
     default: true
@@ -47,7 +47,7 @@ steps:
   - run:
       name: Verify dependencies
       working_directory: << parameters.app_src_directory >>
-      when: << parameters.verify_dependenceis >>
+      when: << parameters.verify_dependencies >>
       command: << parameters.maven_command >> dependency:go-offline "$@"
   - steps: << parameters.steps >>
   - save_cache:

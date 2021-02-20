@@ -1,0 +1,17 @@
+version: 2.1
+orbs:
+  maven: circleci/maven@1.1
+executors:
+  j13:
+    docker:
+      - image: cimg/openjdk:13.0
+  j15:
+    docker:
+      - image: cimg/openjdk:15.0
+workflows:
+  maven_test:
+    jobs:
+      - maven/test:
+          matrix:
+            parameters:
+              executor: [j13, j15]

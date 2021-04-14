@@ -27,7 +27,7 @@ parameters:
     type: string
     default: ''
   verify_dependencies:
-    description: Verify dependencies are valid and available from pubic sources
+    description: Verify dependencies are valid and available from public sources
     type: boolean
     default: true
 steps:

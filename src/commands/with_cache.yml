@@ -44,11 +44,13 @@ steps:
         if [ -n "<< parameters.settings_file >>" ]; then
           set -- "$@" --settings "<< parameters.settings_file >>"
         fi
-  - run:
-      name: Verify dependencies
-      working_directory: << parameters.app_src_directory >>
-      when: << parameters.verify_dependencies >>
-      command: << parameters.maven_command >> dependency:go-offline "$@"
+  - when:
+      condition: << parameters.verify_dependencies >>
+      steps:
+        - run:
+            name: Verify dependencies
+            working_directory: << parameters.app_src_directory >>
+            command: << parameters.maven_command >> dependency:go-offline "$@"
   - steps: << parameters.steps >>
   - save_cache:
       paths:

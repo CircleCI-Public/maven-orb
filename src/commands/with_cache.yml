@@ -26,6 +26,10 @@ parameters:
     description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
     type: string
     default: ''
+  verify_dependencies:
+    description: Verify dependencies are valid and available from public sources
+    type: boolean
+    default: true
 steps:
   - run:
       name: Generate Cache Checksum
@@ -40,7 +44,13 @@ steps:
         if [ -n "<< parameters.settings_file >>" ]; then
           set -- "$@" --settings "<< parameters.settings_file >>"
         fi
-        << parameters.maven_command >> org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline "$@"
+  - when:
+      condition: << parameters.verify_dependencies >>
+      steps:
+        - run:
+            name: Verify dependencies
+            working_directory: << parameters.app_src_directory >>
+            command: << parameters.maven_command >> dependency:go-offline "$@"
   - steps: << parameters.steps >>
   - save_cache:
       paths:

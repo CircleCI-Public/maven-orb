@@ -1,0 +1,53 @@
+version: 2.1
+
+orbs:
+  maven: circleci/maven@dev:<<pipeline.git.revision>>
+  orb-tools: circleci/orb-tools@11.1
+
+filters: &filters
+  tags:
+    only: /.*/
+
+jobs:
+  # This job is an example of an integration testing job.
+  # This job should execute a command from your orb and verify
+  # the output is as expected, otherwise the job should fail.
+  #
+  # Rename this job and add more as needed.
+  #
+  integration-test-1:
+    executor: maven/default
+    steps:
+      - checkout
+      - run:
+          name: Check if Maven is installed
+          command: |-
+            if [[ $(command -v mvn) == "" ]]; then
+              echo " Maven is not installed "; exit 1;
+            else
+              echo Maven successfully installed.
+            fi
+
+workflows:
+  test-deploy:
+    jobs:
+      # Make sure to include "filters: *filters" in every test job you want to run as part of your deployment.
+      - command-tests:
+          filters: *filters
+      - orb-tools/pack:
+          filters: *filters
+      - integration-test-1
+      - orb-tools/publish:
+          orb-name: circleci/maven
+          vcs-type: << pipeline.project.type >>
+          pub-type: production
+          requires:
+            - orb-tools/pack
+            - command-tests
+            - integration-test-1
+          context: orb-publisher
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/

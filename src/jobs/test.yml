@@ -37,10 +37,10 @@ steps:
         - run:
             name: Run Tests
             working_directory: << parameters.app_src_directory >>
-            command: |
-              if [ -n "<< parameters.settings_file >>" ]; then
-                set -- "$@" --settings "<< parameters.settings_file >>"
-              fi
-              << parameters.maven_command >> << parameters.command >> "$@"
+            environment:            
+              PARAM_MVN_COMMAND: << parameters.maven_command >>
+              PARAM_COMMAND: << parameters.maven_command >>
+              PARAM_SETTINGS_FILE: << parameters.settings_file >>
+            command: << include(src/scripts/run-tests.sh) >>
   - process_test_results:
       test_results_path: << parameters.test_results_path >>

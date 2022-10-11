@@ -40,17 +40,18 @@ steps:
   - run:
       name: Install Dependencies
       working_directory: << parameters.app_src_directory >>
-      command: |
-        if [ -n "<< parameters.settings_file >>" ]; then
-          set -- "$@" --settings "<< parameters.settings_file >>"
-        fi
+      environment: 
+        PARAM_SETTINGS_FILE: << parameters.settings_file >>
+      command: << include(src/scripts/with_cache/install-deps.sh) >>
   - when:
       condition: << parameters.verify_dependencies >>
       steps:
         - run:
+            environment: 
+              PARAM_MVN_COMMAND: << parameters.maven_command >>
             name: Verify dependencies
             working_directory: << parameters.app_src_directory >>
-            command: << parameters.maven_command >> org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline "$@"
+            command: << include(src/scripts/with_cache/verify.sh) >>
   - steps: << parameters.steps >>
   - save_cache:
       paths:

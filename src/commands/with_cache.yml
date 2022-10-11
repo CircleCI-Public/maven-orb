@@ -41,12 +41,6 @@ steps:
       command: << include(scripts/gen-cache-checksum.sh) >>
   - restore_cache:
       key: maven-{{ checksum "/tmp/maven_cache_seed" }}
-  - run:
-      name: Install Dependencies
-      working_directory: << parameters.app_src_directory >>
-      environment:
-        PARAM_MVN_COMMAND: << parameters.maven_command >>
-      command: << include(scripts/install-deps.sh) >>
   - when:
       condition: << parameters.verify_dependencies >>
       steps:

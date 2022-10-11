@@ -16,6 +16,8 @@ workflows:
       - maven/test: 
           app_src_directory: sample_app
           filters: *filters
+          pre-steps: 
+            - run: mvn clean install
       - orb-tools/publish:
           orb-name: circleci/maven
           vcs-type: << pipeline.project.type >>

@@ -42,7 +42,7 @@ steps:
       working_directory: << parameters.app_src_directory >>
       environment: 
         PARAM_SETTINGS_FILE: << parameters.settings_file >>
-      command: << include(src/scripts/with_cache/install-deps.sh) >>
+      command: << include(src/scripts/install-deps.sh) >>
   - when:
       condition: << parameters.verify_dependencies >>
       steps:
@@ -51,7 +51,7 @@ steps:
               PARAM_MVN_COMMAND: << parameters.maven_command >>
             name: Verify dependencies
             working_directory: << parameters.app_src_directory >>
-            command: << include(src/scripts/with_cache/verify.sh) >>
+            command: << include(src/scripts/verify.sh) >>
   - steps: << parameters.steps >>
   - save_cache:
       paths:

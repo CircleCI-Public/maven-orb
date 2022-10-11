@@ -54,7 +54,7 @@ steps:
       environment:
         PARAM_TEST_DIR: << parameters.test_directory >>
         PARAM_PATTERN: << parameters.parallel_it_pattern >>
-      command: << include(src/scripts/parallel_test/enable-test-splitting.sh) >>
+      command: << include(src/scripts/enable-test-splitting.sh) >>
   - store_artifacts:
       path: .circleci/tests/
   - with_cache:
@@ -69,6 +69,6 @@ steps:
               PARAM_MVN_COMMAND: << parameters.maven_command >>
               PARAM_COMMAND: << parameters.maven_command >>
               PARAM_SETTINGS_FILE: << parameters.settings_file >>
-            command: << include(src/scripts/parellel_test/run-tests.sh) >>
+            command: << include(src/scripts/run-parallel-tests.sh) >>
   - process_test_results:
       test_results_path: << parameters.test_results_path >>

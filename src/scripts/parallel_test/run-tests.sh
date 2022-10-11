@@ -1,3 +1,4 @@
+#!/bin/bash
 if [ -n "" ]; then
     set -- "$@" --settings "$PARAM_SETTINGS_FILE"
 fi

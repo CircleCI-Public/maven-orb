@@ -1,3 +1,4 @@
+#!/bin/bash
 echo -e "\033[31m\033[4mOrb Notes on Test Splitting\033[0m
         \033[34mCaveat 1:\033[0m  CircleCI Test Splitting uses filename by default, but JUnit reports use class names.
         Therefore this orb uses naive translation of linux file paths to dot separated package names and strips the .java suffix.

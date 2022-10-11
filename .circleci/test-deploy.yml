@@ -40,7 +40,6 @@ workflows:
           pub-type: production
           requires:
             - orb-tools/pack
-            - command-tests
             - integration-test-1
           context: orb-publisher
           filters:

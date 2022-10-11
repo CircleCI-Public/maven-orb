@@ -30,6 +30,10 @@ parameters:
     description: Verify dependencies are valid and available from public sources
     type: boolean
     default: true
+  dependency_plugin_version:
+    description: Specify the Maven Dependency Plugin
+    type: string
+    default: "3.3.0"
 steps:
   - run:
       name: Generate Cache Checksum
@@ -37,18 +41,14 @@ steps:
       command: << include(scripts/gen-cache-checksum.sh) >>
   - restore_cache:
       key: maven-{{ checksum "/tmp/maven_cache_seed" }}
-  - run:
-      name: Install Dependencies
-      working_directory: << parameters.app_src_directory >>
-      environment:
-        PARAM_SETTINGS_FILE: << parameters.settings_file >>
-      command: << include(scripts/install-deps.sh) >>
   - when:
       condition: << parameters.verify_dependencies >>
       steps:
         - run:
             environment:
+              PARAM_SETTINGS_FILE: << parameters.settings_file >>
               PARAM_MVN_COMMAND: << parameters.maven_command >>
+              PARAM_DEP_PLUGIN_VER: << parameters.dependency_plugin_version >>
             name: Verify dependencies
             working_directory: << parameters.app_src_directory >>
             command: << include(scripts/verify.sh) >>

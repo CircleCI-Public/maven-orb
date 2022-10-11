@@ -8,28 +8,13 @@ filters: &filters
   tags:
     only: /.*/
 
-jobs:
-  integration-test-1:
-    executor: maven/default
-    steps:
-      - checkout
-      - run:
-          name: Check if Maven is installed
-          command: |-
-            if [[ $(command -v mvn) == "" ]]; then
-              echo " Maven is not installed "; exit 1;
-            else
-              echo Maven successfully installed.
-            fi
-      - maven/test: 
-          app_src_directory: sample_app
-
 workflows:
   test-deploy:
     jobs:
       - orb-tools/pack:
           filters: *filters
-      - integration-test-1:
+      - maven/test: 
+          app_src_directory: sample_app
           filters: *filters
       - orb-tools/publish:
           orb-name: circleci/maven
@@ -37,7 +22,7 @@ workflows:
           pub-type: production
           requires:
             - orb-tools/pack
-            - integration-test-1
+            - maven/test
           context: orb-publisher
           filters:
             branches:

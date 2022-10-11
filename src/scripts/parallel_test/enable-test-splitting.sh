@@ -10,17 +10,13 @@ echo -e "\033[31m\033[4mOrb Notes on Test Splitting\033[0m
 mkdir -p .circleci/tests/
 # generate excluded surefire tests using provided pattern
 circleci tests glob "$PARAM_TEST_DIR"/"$PARAM_PATTERN" | \
-    sed -e 's#^"$PARAM_TEST_DIR"/\(.*\)\.java#\1#' | \
+    sed -e "s#^$PARAM_TEST_DIR/\(.*\)\.java#\1#" | \
     tr "/" "." > .circleci/tests/surefire_classnames
-cat .circleci/tests/surefire_classnames | \
-    circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
-cat .circleci/tests/surefire_classnames | \
-    grep -xvf /tmp/this_node_tests > .circleci/tests/surefire_classnames_ignore_list
+circleci tests split --split-by=timings --timings-type=classname < .circleci/tests/surefire_classnames > /tmp/this_node_tests 
+grep -xvf /tmp/this_node_tests < .circleci/tests/surefire_classnames > .circleci/tests/surefire_classnames_ignore_list 
 # generate excluded failsafe tests using provided pattern
 circleci tests glob "$PARAM_TEST_DIR"/"$PARAM_PATTERN" | \
-    sed -e 's#^"$PARAM_TEST_DIR"/\(.*\)\.java#\1#' | \
+    sed -e "s#^$PARAM_TEST_DIR/\(.*\)\.java#\1#" | \
     tr "/" "." > .circleci/tests/failsafe_classnames
-cat .circleci/tests/failsafe_classnames | \
-    circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_it_tests
-cat .circleci/tests/failsafe_classnames |  \
-    grep -xvf /tmp/this_node_it_tests > .circleci/tests/failsafe_classnames_ignore_list
+circleci tests split --split-by=timings --timings-type=classname < .circleci/tests/failsafe_classnames > /tmp/this_node_it_tests
+grep -xvf /tmp/this_node_it_tests < .circleci/tests/failsafe_classnames > .circleci/tests/failsafe_classnames_ignore_list

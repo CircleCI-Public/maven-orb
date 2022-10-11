@@ -1,0 +1,31 @@
+version: 2.1
+
+orbs:
+  maven: circleci/maven@dev:<<pipeline.git.revision>>
+  orb-tools: circleci/orb-tools@11.1
+
+filters: &filters
+  tags:
+    only: /.*/
+
+workflows:
+  test-deploy:
+    jobs:
+      - orb-tools/pack:
+          filters: *filters
+      - maven/test: 
+          app_src_directory: sample_app
+          filters: *filters
+      - orb-tools/publish:
+          orb-name: circleci/maven
+          vcs-type: << pipeline.project.type >>
+          pub-type: production
+          requires:
+            - orb-tools/pack
+            - maven/test
+          context: orb-publisher
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/

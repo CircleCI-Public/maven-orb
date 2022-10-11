@@ -2,7 +2,7 @@
 description: |
   The latest minor and patch update of the version 13 JDK image provided by CircleCI.
 docker:
-  - image: 'cimg/openjdk:<<parameters.tag>>'
+  - image: "cimg/openjdk:<<parameters.tag>>"
 parameters:
   tag:
     default: "13.0"

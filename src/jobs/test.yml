@@ -5,7 +5,7 @@ parameters:
   app_src_directory:
     description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
     type: string
-    default: ''
+    default: ""
   executor:
     description: The name of custom executor to use
     type: executor
@@ -37,10 +37,10 @@ steps:
         - run:
             name: Run Tests
             working_directory: << parameters.app_src_directory >>
-            command: |
-              if [ -n "<< parameters.settings_file >>" ]; then
-                set -- "$@" --settings "<< parameters.settings_file >>"
-              fi
-              << parameters.maven_command >> << parameters.command >> "$@"
+            environment:
+              PARAM_MVN_COMMAND: << parameters.maven_command >>
+              PARAM_COMMAND: << parameters.command >>
+              PARAM_SETTINGS_FILE: << parameters.settings_file >>
+            command: << include(scripts/run-tests.sh) >>
   - process_test_results:
       test_results_path: << parameters.test_results_path >>

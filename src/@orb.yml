@@ -3,8 +3,6 @@ version: 2.1
 description: >
   Simplify common tasks for building and testing Java projects using Maven on CircleCI
 
-
 display:
   home_url: "https://maven.apache.org/"
   source_url: "https://github.com/CircleCI-Public/maven-orb"
-

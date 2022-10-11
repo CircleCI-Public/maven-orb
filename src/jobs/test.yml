@@ -39,7 +39,7 @@ steps:
             working_directory: << parameters.app_src_directory >>
             environment:
               PARAM_MVN_COMMAND: << parameters.maven_command >>
-              PARAM_COMMAND: << parameters.maven_command >>
+              PARAM_COMMAND: << parameters.command >>
               PARAM_SETTINGS_FILE: << parameters.settings_file >>
             command: << include(scripts/run-tests.sh) >>
   - process_test_results:

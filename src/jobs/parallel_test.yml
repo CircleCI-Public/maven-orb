@@ -47,6 +47,15 @@ parameters:
     description: If following standard maven conventions this does not need to be changed.
     type: string
     default: "src/test/java"
+  verify_dependencies:
+    description: Verify dependencies are valid and available from public sources
+    type: boolean
+    default: true
+  dependency_plugin_version:
+    description: Specify the Maven Dependency Plugin
+    type: string
+    default: "3.1.2"
+
 steps:
   - checkout
   - run:
@@ -61,6 +70,8 @@ steps:
       settings_file: << parameters.settings_file >>
       app_src_directory: << parameters.app_src_directory >>
       maven_command: << parameters.maven_command >>
+      dependency_plugin_version: << parameters.dependency_plugin_version >>
+      verify_dependencies: << parameters.verify_dependencies >>
       steps:
         - run:
             name: Run Tests

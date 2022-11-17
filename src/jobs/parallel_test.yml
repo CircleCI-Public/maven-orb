@@ -62,7 +62,8 @@ steps:
       name: Enable Test Splitting
       environment:
         PARAM_TEST_DIR: << parameters.test_directory >>
-        PARAM_PATTERN: << parameters.parallel_it_pattern >>
+        PARAM_TEST_PATTERN: << parameters.parallel_test_pattern >>
+        PARAM_IT_PATTERN: << parameters.parallel_it_pattern >>
       command: << include(scripts/enable-test-splitting.sh) >>
   - store_artifacts:
       path: .circleci/tests/

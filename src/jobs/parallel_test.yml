@@ -62,7 +62,8 @@ steps:
       name: Enable Test Splitting
       environment:
         PARAM_TEST_DIR: << parameters.test_directory >>
-        PARAM_PATTERN: << parameters.parallel_it_pattern >>
+        PARAM_TEST_PATTERN: << parameters.parallel_test_pattern >>
+        PARAM_IT_PATTERN: << parameters.parallel_it_pattern >>
       command: << include(scripts/enable-test-splitting.sh) >>
   - store_artifacts:
       path: .circleci/tests/
@@ -78,7 +79,7 @@ steps:
             working_directory: << parameters.app_src_directory >>
             environment:
               PARAM_MVN_COMMAND: << parameters.maven_command >>
-              PARAM_COMMAND: << parameters.maven_command >>
+              PARAM_COMMAND: << parameters.command >>
               PARAM_SETTINGS_FILE: << parameters.settings_file >>
             command: << include(scripts/run-parallel-tests.sh) >>
   - process_test_results:

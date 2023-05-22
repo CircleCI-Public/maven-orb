@@ -17,6 +17,11 @@ workflows:
           app_src_directory: sample_app
           command: test -DforkCount=4
           filters: *filters
+      - maven/parallel_test:
+          command: "verify"
+          parallelism: 4
+          test_results_path: sample_app2/target/surefire-reports
+          test_directory: "."
       - orb-tools/publish:
           orb-name: circleci/maven
           vcs-type: << pipeline.project.type >>
@@ -24,6 +29,7 @@ workflows:
           requires:
             - orb-tools/pack
             - maven/test
+            - maven/parallel_test
           context: orb-publisher
           filters:
             branches:

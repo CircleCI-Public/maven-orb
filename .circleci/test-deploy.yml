@@ -24,7 +24,6 @@ workflows:
           requires:
             - orb-tools/pack
             - maven/test
-            - maven/parallel_test
           context: orb-publisher
           filters:
             branches:

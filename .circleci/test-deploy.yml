@@ -14,7 +14,7 @@ workflows:
       - orb-tools/pack:
           filters: *filters
       - maven/test: 
-          app_src_directory: sample_app
+          app_src_directory: sample_app2
           command: test -DforkCount=4
           filters: *filters
       - orb-tools/publish:

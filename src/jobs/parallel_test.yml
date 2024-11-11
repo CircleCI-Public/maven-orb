@@ -81,6 +81,7 @@ steps:
               PARAM_MVN_COMMAND: << parameters.maven_command >>
               PARAM_COMMAND: << parameters.command >>
               PARAM_SETTINGS_FILE: << parameters.settings_file >>
-            command: << include(scripts/run-parallel-tests.sh) >>
+              PARAM_PARALLEL_IGNORE_LISTS_EXIST: "true"
+            command: << include(scripts/run-tests.sh) >>
   - process_test_results:
       test_results_path: << parameters.test_results_path >>

@@ -23,7 +23,9 @@ parameters:
     type: string
     default: mvn
   app_src_directory:
-    description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
+    description: |
+      The directory containing the pom.xml file for the project.
+      Useful when the source of your maven project is not in the root directory of your git repo.
     type: string
     default: ""
   verify_dependencies:

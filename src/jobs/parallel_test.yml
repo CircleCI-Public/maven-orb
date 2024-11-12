@@ -55,9 +55,28 @@ parameters:
     description: Specify the Maven Dependency Plugin
     type: string
     default: "3.1.2"
+  mvn_step_name:
+    description: The name given to the step that runs the maven command.
+    type: string
+    default: "Run Tests"
+  skip_checkout:
+    description: Skip the checkout step if set to true. Useful when pre-steps are passed in to the job that will obtain the source code.
+    type: boolean
+    default: false
+  pre_mvn_steps:
+    description: (Optional) Steps to run just before maven, after the code has been checked out and the cache has been restored.
+    type: steps
+    default: []
+  post_mvn_steps:
+    description: (Optional) Steps to run immediately after maven has completed, before test results are processed.
+    type: steps
+    default: []
 
 steps:
-  - checkout
+  - unless:
+      condition: << parameters.skip_checkout >>
+      steps:
+        - checkout
   - run:
       name: Enable Test Splitting
       environment:
@@ -74,13 +93,15 @@ steps:
       dependency_plugin_version: << parameters.dependency_plugin_version >>
       verify_dependencies: << parameters.verify_dependencies >>
       steps:
+        - steps: << parameters.pre_mvn_steps >>
         - run:
-            name: Run Tests
+            name: << parameters.mvn_step_name >>
             working_directory: << parameters.app_src_directory >>
             environment:
               PARAM_MVN_COMMAND: << parameters.maven_command >>
               PARAM_COMMAND: << parameters.command >>
               PARAM_SETTINGS_FILE: << parameters.settings_file >>
             command: << include(scripts/run-parallel-tests.sh) >>
+        - steps: << parameters.post_mvn_steps >>
   - process_test_results:
       test_results_path: << parameters.test_results_path >>

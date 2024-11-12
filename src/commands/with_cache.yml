@@ -34,13 +34,21 @@ parameters:
     description: Specify the Maven Dependency Plugin
     type: string
     default: "3.1.2"
+  cache_name:
+    description: The cache's name prefix to allow for multiple caches and/or cache invalidation.
+    type: string
+    default: "maven"
 steps:
   - run:
       name: Generate Cache Checksum
       working_directory: << parameters.app_src_directory >>
       command: << include(scripts/gen-cache-checksum.sh) >>
   - restore_cache:
-      key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+      keys:
+        # Try to restore a cache made from the most recent build using our pom.xml
+        - << parameters.cache_name >>-{{ checksum "/tmp/maven_cache_seed" }}
+        # ... but if not, try anything with the same cache prefix as it's better than nothing.
+        - << parameters.cache_name >>-
   - when:
       condition: << parameters.verify_dependencies >>
       steps:
@@ -56,4 +64,4 @@ steps:
   - save_cache:
       paths:
         - ~/.m2/repository
-      key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+      key: << parameters.cache_name >>-{{ checksum "/tmp/maven_cache_seed" }}

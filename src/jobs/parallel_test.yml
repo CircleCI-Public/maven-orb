@@ -55,6 +55,10 @@ parameters:
     description: Specify the Maven Dependency Plugin
     type: string
     default: "3.1.2"
+  cache_name:
+    description: The cache's name prefix to allow for multiple caches and/or cache invalidation.
+    type: string
+    default: "maven"
 
 steps:
   - checkout
@@ -74,6 +78,7 @@ steps:
       maven_command: << parameters.maven_command >>
       dependency_plugin_version: << parameters.dependency_plugin_version >>
       verify_dependencies: << parameters.verify_dependencies >>
+      cache_name: << parameters.cache_name >>
       steps:
         - run:
             name: Run Tests

@@ -61,6 +61,7 @@ steps:
   - run:
       name: Enable Test Splitting
       environment:
+        PARAM_APP_SRC_DIR: << parameters.app_src_directory >>
         PARAM_TEST_DIR: << parameters.test_directory >>
         PARAM_TEST_PATTERN: << parameters.parallel_test_pattern >>
         PARAM_IT_PATTERN: << parameters.parallel_it_pattern >>
@@ -84,4 +85,5 @@ steps:
               PARAM_PARALLEL_IGNORE_LISTS_EXIST: "true"
             command: << include(scripts/run-tests.sh) >>
   - process_test_results:
+      app_src_directory: << parameters.app_src_directory >>
       test_results_path: << parameters.test_results_path >>

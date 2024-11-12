@@ -5,10 +5,32 @@ description: |
   look in `target/surefire-reports` (the default location for maven test results).
   You can override where to find the test results with the path parameter.
 parameters:
+  app_src_directory:
+    description: |
+      The directory containing the pom.xml file for the project.
+      Useful when the source of your maven project is not in the root directory of your git repo.
+
+      This is ignored if test_results_path is an absolute path.
+    type: string
+    default: ""
   test_results_path:
     description: Specify a custom path for maven test results
     type: string
     default: target/surefire-reports
 steps:
-  - store_test_results:
-      path: << parameters.test_results_path >>
+  - when: # if test_results_path is an absolute path, don't prepend app_src_directory
+      condition:
+        matches:
+          pattern: "^/"
+          value: << parameters.test_results_path >>
+      steps:
+        - store_test_results:
+            path: << parameters.test_results_path >>
+  - unless: # otherwise, prepend app_src_directory with a / separator if app_src_directory is not empty
+      condition:
+        matches:
+          pattern: "^/"
+          value: << parameters.test_results_path >>
+      steps:
+        - store_test_results:
+            path: << parameters.app_src_directory >><<#parameters.app_src_directory>>/<</parameters.app_src_directory>><< parameters.test_results_path >>

@@ -53,4 +53,5 @@ steps:
               PARAM_SETTINGS_FILE: << parameters.settings_file >>
             command: << include(scripts/run-tests.sh) >>
   - process_test_results:
+      app_src_directory: << parameters.app_src_directory >>
       test_results_path: << parameters.test_results_path >>

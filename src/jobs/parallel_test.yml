@@ -12,7 +12,7 @@ parameters:
     type: string
     default: ""
   command:
-    description: The maven command to run.
+    description: The maven command(s) to run. Multiple commands can be run by providing a multi-line string.
     type: string
     default: verify
   settings_file:

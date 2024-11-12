@@ -4,6 +4,17 @@ if [ -n "" ]; then
     set -- "$@" --settings "$PARAM_SETTINGS_FILE"
 fi
 
-set -x
-"$PARAM_MVN_COMMAND" "$PARAM_COMMAND" -Dsurefire.excludesFile=.circleci/tests/surefire_classnames_ignore_list -Dfailsafe.excludesFile=.circleci/tests/failsafe_classnames_ignore_list "$@"
-set +x
+# Loop over each line in PARAM_COMMAND
+printf '%s\n' "$PARAM_COMMAND" | while IFS= read -r LINE_FROM_PARAM_COMMAND; do
+    # Strip leading and trailing whitespace
+    TRIMMED_LINE_FROM_PARAM_COMMAND=$(echo "$LINE_FROM_PARAM_COMMAND" | xargs)
+    # Check if the line is not empty
+    if [ -n "$TRIMMED_LINE_FROM_PARAM_COMMAND" ]; then
+        # Invoke the command with the trimmed line and additional arguments
+        (
+            set -x
+            # shellcheck disable=SC2086
+            $PARAM_MVN_COMMAND $TRIMMED_LINE_FROM_PARAM_COMMAND -Dsurefire.excludesFile=.circleci/tests/surefire_classnames_ignore_list -Dfailsafe.excludesFile=.circleci/tests/failsafe_classnames_ignore_list "$@"
+        ) || exit 1
+    fi
+done

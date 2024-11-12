@@ -1,8 +1,9 @@
 version: 2.1
 
 orbs:
-  maven: circleci/maven@dev:<<pipeline.git.revision>>
-  orb-tools: circleci/orb-tools@11.1
+  # The orb we're building will be injected using the 'orb-under-test' name.
+  # (because config.yml's continue stage said "orb-name: orb-under-test")
+  orb-tools: circleci/orb-tools@12
 
 filters: &filters
   tags:
@@ -11,19 +12,21 @@ filters: &filters
 workflows:
   test-deploy:
     jobs:
-      - orb-tools/pack:
+      - orb-under-test/test:
           filters: *filters
-      - maven/test: 
+          name: Test test job with simple use case
           app_src_directory: sample_app2
           command: test -DforkCount=4
+      - orb-tools/pack:
           filters: *filters
+          requires:
+            - Test test job with simple use case
       - orb-tools/publish:
-          orb-name: circleci/maven
-          vcs-type: << pipeline.project.type >>
-          pub-type: production
+          orb_name: circleci/maven
+          vcs_type: << pipeline.project.type >>
+          pub_type: production
           requires:
             - orb-tools/pack
-            - maven/test
           context: orb-publisher
           filters:
             branches:

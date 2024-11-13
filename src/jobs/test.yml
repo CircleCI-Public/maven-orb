@@ -3,7 +3,9 @@ description: |
 executor: <<parameters.executor>>
 parameters:
   app_src_directory:
-    description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
+    description: |
+      The directory containing the pom.xml file for the project.
+      Useful when the source of your maven project is not in the root directory of your git repo.
     type: string
     default: ""
   executor:
@@ -34,6 +36,10 @@ parameters:
     description: Specify the Maven Dependency Plugin
     type: string
     default: "3.1.2"
+  cache_name:
+    description: The cache's name prefix to allow for multiple caches and/or cache invalidation.
+    type: string
+    default: "maven"
   mvn_step_name:
     description: The name given to the step that runs the maven command.
     type: string
@@ -62,6 +68,7 @@ steps:
       maven_command: << parameters.maven_command >>
       dependency_plugin_version: << parameters.dependency_plugin_version >>
       verify_dependencies: << parameters.verify_dependencies >>
+      cache_name: << parameters.cache_name >>
       steps:
         - steps: << parameters.pre_mvn_steps >>
         - run:
@@ -74,4 +81,5 @@ steps:
             command: << include(scripts/run-tests.sh) >>
         - steps: << parameters.post_mvn_steps >>
   - process_test_results:
+      app_src_directory: << parameters.app_src_directory >>
       test_results_path: << parameters.test_results_path >>

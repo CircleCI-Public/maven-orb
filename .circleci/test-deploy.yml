@@ -14,13 +14,13 @@ workflows:
     jobs:
       - orb-under-test/test:
           filters: *filters
-          name: Test test job with simple use case
+          name: test
           app_src_directory: sample_app
           command: test -DforkCount=4
       - orb-tools/pack:
           filters: *filters
           requires:
-            - Test test job with simple use case
+            - test
       - orb-tools/publish:
           orb_name: circleci/maven
           vcs_type: << pipeline.project.type >>

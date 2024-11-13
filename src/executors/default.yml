@@ -1,12 +1,24 @@
 # How to author Executors: https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
 description: |
-  The latest minor and patch update of the version 13 JDK image provided by CircleCI.
-docker:
-  - image: "cimg/openjdk:<<parameters.tag>>"
+  CircleCI Java JDK image.
+  Defaults to Java 17.0 and size "small".
+
 parameters:
   tag:
-    default: "13.0"
-    description: |
-      Can be changed to any of the available tags listed on the DockerHub for this image.
+    default: "17.0"
+    description: >
+      Can be changed to any of the available tags listed on the DockerHub for
+      this image.
+
       https://hub.docker.com/r/cimg/openjdk/tags
     type: string
+  resource_class:
+    default: 'small'
+    description: >
+      The resource class to use for the executor.
+    type: string
+
+docker:
+  - image: "cimg/openjdk:<<parameters.tag>>"
+
+resource_class: <<parameters.resource_class>>

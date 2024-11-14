@@ -14,19 +14,153 @@ workflows:
     jobs:
       - orb-under-test/test:
           filters: *filters
-          name: test
+          name: Test test job with simple use case
           app_src_directory: sample_app
           command: test -DforkCount=4
+      - orb-under-test/test:
+          filters: *filters
+          name: Test test job with multi-step use case
+          app_src_directory: sample_app
+          mvn_step_name: Show project.version, install, then test
+          command: |
+            help:evaluate -Dexpression=project.version -q -DforceStdout
+            -Dmaven.test.skip=true install
+            verify
+          skip_checkout: true
+          pre-steps:
+            - checkout
+            - run:
+                name: Prevent git checkout from working again in this job
+                command: rm -rf .git # any future checkout will fail
+          pre_mvn_steps:
+            - run:
+                name: pre_mvn_step to show project.version
+                command: |
+                  cd sample_app
+                  mvn help:evaluate -Dexpression=project.version -q -DforceStdout
+          post_mvn_steps:
+            - run:
+                name: list files in the workspace
+                command: find . -ls
+      - orb-under-test/test:
+          filters: *filters
+          name: Test test job with pom in base directory
+          skip_checkout: true
+          pre-steps:
+            - checkout
+            - run:
+                name: Give us just the sample_app in the workspace
+                command: |
+                  set -ex
+                  cd sample_app
+                  tar -cf /tmp/sample_app.tar .
+                  cd ..
+                  rm -rf .[a-z]* *
+                  tar -xf /tmp/sample_app.tar
+                  rm /tmp/sample_app.tar
+                  find . -ls
+      - orb-under-test/test:
+          filters: *filters
+          name: Test test job with test_results_path having an absolute path
+          app_src_directory: sample_app
+          command: test
+          test_results_path: /tmp/custom-path-to-surefire-reports
+          post_mvn_steps:
+            - run:
+                name: Move test results to custom path
+                command: mv sample_app/target/surefire-reports /tmp/custom-path-to-surefire-reports
+      - orb-under-test/test:
+          filters: *filters
+          name: Test test job with test_results_path having a relative path
+          app_src_directory: sample_app
+          command: test
+          test_results_path: custom-path-to-surefire-reports
+          post_mvn_steps:
+            - run:
+                name: Move test results to custom path
+                command: mv sample_app/target/surefire-reports sample_app/custom-path-to-surefire-reports
+      - orb-under-test/test:
+          filters: *filters
+          name: Test test job with custom executor
+          app_src_directory: sample_app
+          executor:
+            name: orb-under-test/default
+            tag: '17.0-node'
+            resource_class: medium
+          pre-steps:
+            - run:
+                name: Verify we got the right executor - one with node installed
+                command: node --version
+      - orb-under-test/parallel_test:
+          filters: *filters
+          name: Test parallel_test job with simple use case
+          app_src_directory: sample_app
+          command: test -DforkCount=4
+      - orb-under-test/parallel_test:
+          filters: *filters
+          name: Test parallel_test job with multi-step use case
+          app_src_directory: sample_app
+          mvn_step_name: Show project.version, install, then test
+          command: |
+            help:evaluate -Dexpression=project.version -q -DforceStdout
+            -Dmaven.test.skip=true install
+            verify
+          skip_checkout: true
+          pre-steps:
+            - checkout
+            - run:
+                name: Prevent git checkout from working again in this job
+                command: rm -rf .git # any future checkout will fail
+          pre_mvn_steps:
+            - run:
+                name: pre_mvn_step to show project.version
+                command: |
+                  cd sample_app
+                  mvn help:evaluate -Dexpression=project.version -q -DforceStdout
+          post_mvn_steps:
+            - run:
+                name: list files in the workspace
+                command: find . -ls
+      - orb-under-test/parallel_test:
+          filters: *filters
+          name: Test parallel_test job with pom in base directory
+          skip_checkout: true
+          pre-steps:
+            - checkout
+            - run:
+                name: Give us just the sample_app in the workspace
+                command: |
+                  set -ex
+                  cd sample_app
+                  tar -cf /tmp/sample_app.tar .
+                  cd ..
+                  rm -rf .[a-z]* *
+                  tar -xf /tmp/sample_app.tar
+                  rm /tmp/sample_app.tar
+                  find . -ls
       - orb-tools/pack:
           filters: *filters
           requires:
-            - test
+            - Test test job with simple use case
+            - Test test job with multi-step use case
+            - Test test job with pom in base directory
+            - Test test job with test_results_path having an absolute path
+            - Test test job with test_results_path having a relative path
+            - Test test job with custom executor
+            - Test parallel_test job with simple use case
+            - Test parallel_test job with multi-step use case
+            - Test parallel_test job with pom in base directory
+          # Our GitHub repository is told to look for a job called "test" to
+          # pass before a PR can be merged.
+          # This job only runs if all the tests pass, we're going to call this
+          # job "test" so that GitHub will know if this build is OK to merge.
+          name: test
       - orb-tools/publish:
           orb_name: circleci/maven
           vcs_type: << pipeline.project.type >>
           pub_type: production
           requires:
-            - orb-tools/pack
+            - test # actually the orb-tools/pack job
           context: orb-publisher
           filters:
             branches:

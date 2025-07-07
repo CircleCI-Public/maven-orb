@@ -14,7 +14,7 @@ executors:
       xcode: 15.3.0
   windows:
     machine:
-      image: windows-server-2022:2024.12.1
+      image: windows-server-2022-gui:current
       resource_class: windows.medium
       shell: bash.exe
 

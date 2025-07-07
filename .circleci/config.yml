@@ -21,7 +21,7 @@ workflows:
           filters: *filters
       - orb-tools/continue:
           filters: *filters
-          orb_name: orb-under-test
+          orb_name: maven-orb
           pipeline_number: << pipeline.number >>
           vcs_type: << pipeline.project.type >>
           requires:

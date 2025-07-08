@@ -22,12 +22,24 @@ workflows:
   test-deploy:
     jobs:
       - maven-orb/test:
-          matrix:
-            alias: Test test job with simple use case
-            parameters:
-              executor: [maven-orb/default, windows, macos]
           filters: *filters
-          name: Test test job with simple use case-<<matrix.executor>>
+          name: test job with simple use case - macos
+          app_src_directory: sample_app
+          executor: windows
+          command: test -DforkCount=4
+          pre-steps:
+            - run: brew install maven
+      - maven-orb/test:
+          filters: *filters
+          name: test job with simple use case - windows
+          app_src_directory: sample_app
+          executor: windows
+          command: test -DforkCount=4
+          pre-steps:
+            - run: choco install maven
+      - maven-orb/test:
+          filters: *filters
+          name: test job with simple use case - linux
           app_src_directory: sample_app
           command: test -DforkCount=4
       - maven-orb/test:
@@ -154,7 +166,9 @@ workflows:
       - orb-tools/pack:
           filters: *filters
           requires:
-            - Test test job with simple use case
+            - test job with simple use case - windows
+            - test job with simple use case - linux
+            - test job with simple use case - macos
             - Test test job with multi-step use case
             - Test test job with pom in base directory
             - Test test job with test_results_path having an absolute path

@@ -31,11 +31,14 @@ workflows:
             - run: brew install maven
       - maven-orb/test:
           filters: *filters
-          name: test job with simple use case - windows
+          name: test job with simple use case - windows - <<matrix.checksum_location>>
           app_src_directory: sample_app
           executor: windows
           command: test -DforkCount=4
-          checksum_location: /c/tmp/maven_cache_seed
+          matrix:
+            alias: test job with simple use case - windows
+            parameters:
+              checksum_location: [/c/tmp/maven_cache_seed, ./.maven_cache_seed]
           pre-steps:
             - run: |
                 choco install maven --version=3.9.10

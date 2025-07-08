@@ -38,7 +38,7 @@ workflows:
           matrix:
             alias: test job with simple use case - windows
             parameters:
-              checksum_location: [/c/tmp/maven_cache_seed, ./.maven_cache_seed]
+              checksum_location: [/tmp/maven_cache_seed, ./.maven_cache_seed]
           pre-steps:
             - run: |
                 choco install maven --version=3.9.10

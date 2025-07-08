@@ -31,4 +31,4 @@ if [[ "$PARAM_CHECKSUM_DIR" == /* ]]; then
 else
     CHECKSUM_DIR="${PWD%/"$PARAM_APP_SRC_DIR"}/$PARAM_CHECKSUM_DIR"
 fi
-find . -name "pom.xml" | sort | xargs cat > "$CHECKSUM_DIR"
+find . -name .git -prune -o -name 'pom.xml' -print0 | sort -z | xargs -0 cat > "$CHECKSUM_DIR"

@@ -48,7 +48,7 @@ steps:
   - restore_cache:
       keys:
         # Try to restore a cache made from the most recent build using our pom.xml
-        - << parameters.cache_name >>-{{ checksum "./.maven_cache_seed" }}
+        - << parameters.cache_name >>-{{ checksum "<< parameters.app_src_directory >>/.maven_cache_seed" }}
         # ... but if not, try anything with the same cache prefix as it's better than nothing.
         - << parameters.cache_name >>-
   - when:
@@ -66,4 +66,4 @@ steps:
   - save_cache:
       paths:
         - ~/.m2/repository
-      key: << parameters.cache_name >>-{{ checksum "./.maven_cache_seed" }}
+      key: << parameters.cache_name >>-{{ checksum "<< parameters.app_src_directory >>/.maven_cache_seed" }}

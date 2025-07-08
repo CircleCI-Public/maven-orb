@@ -50,11 +50,11 @@ steps:
       working_directory: << parameters.app_src_directory >>
       command: << include(scripts/gen-cache-checksum.sh) >>
       environment:
-        PARAM_CHECKSUM_DIR: <<parameter.checksum_location>>
+        PARAM_CHECKSUM_DIR: <<parameters.checksum_location>>
   - restore_cache:
       keys:
         # Try to restore a cache made from the most recent build using our pom.xml
-        - << parameters.cache_name >>-{{ checksum "<< parameters.app_src_directory >>/<<parameter.checksum_location>>" }}
+        - << parameters.cache_name >>-{{ checksum "<< parameters.app_src_directory >>/<<parameters.checksum_location>>" }}
         # ... but if not, try anything with the same cache prefix as it's better than nothing.
         - << parameters.cache_name >>-
   - when:
@@ -72,4 +72,4 @@ steps:
   - save_cache:
       paths:
         - ~/.m2/repository
-      key: << parameters.cache_name >>-{{ checksum "<< parameters.app_src_directory >>/<<parameter.checksum_location>>" }}
+      key: << parameters.cache_name >>-{{ checksum "<< parameters.app_src_directory >>/<<parameters.checksum_location>>" }}

@@ -37,8 +37,8 @@ workflows:
           command: test -DforkCount=4
           pre-steps:
             - run: |
-                choco install maven --version=3.9.5
-                export PATH="$PATH:/c/ProgramData/chocolatey/lib/maven/apache-maven-3.9.5/bin/"
+                choco install maven --version=3.9.10
+                echo 'export PATH="$PATH:/c/ProgramData/chocolatey/lib/maven/apache-maven-3.9.10/bin/"' >> $BASH_ENV
       - maven-orb/test:
           filters: *filters
           name: test job with simple use case - linux

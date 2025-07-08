@@ -35,7 +35,7 @@ workflows:
           app_src_directory: sample_app
           executor: windows
           command: test -DforkCount=4
-          checksum_location: /c/tmp
+          checksum_location: /c/tmp/maven_cache_seed
           pre-steps:
             - run: |
                 choco install maven --version=3.9.10

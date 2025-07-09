@@ -40,15 +40,22 @@ parameters:
     description: The cache's name prefix to allow for multiple caches and/or cache invalidation.
     type: string
     default: "maven"
+  checksum_location:
+    description: The path to save the checksum when calculating cache.
+    type: string
+    default: .maven_cache_seed
 steps:
   - run:
       name: Generate Cache Checksum
       working_directory: << parameters.app_src_directory >>
       command: << include(scripts/gen-cache-checksum.sh) >>
+      environment:
+        PARAM_CHECKSUM_DIR: <<parameters.checksum_location>>
+        PARAM_APP_SRC_DIR: <<parameters.app_src_directory>>
   - restore_cache:
       keys:
         # Try to restore a cache made from the most recent build using our pom.xml
-        - << parameters.cache_name >>-{{ checksum "/tmp/maven_cache_seed" }}
+        - << parameters.cache_name >>-{{ checksum "<<parameters.checksum_location>>" }}
         # ... but if not, try anything with the same cache prefix as it's better than nothing.
         - << parameters.cache_name >>-
   - when:
@@ -66,4 +73,4 @@ steps:
   - save_cache:
       paths:
         - ~/.m2/repository
-      key: << parameters.cache_name >>-{{ checksum "/tmp/maven_cache_seed" }}
+      key: << parameters.cache_name >>-{{ checksum "<<parameters.checksum_location>>" }}

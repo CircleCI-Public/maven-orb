@@ -1,23 +1,54 @@
 version: 2.1
 
 orbs:
-  # The orb we're building will be injected using the 'orb-under-test' name.
-  # (because config.yml's continue stage said "orb-name: orb-under-test")
+  # The orb we're building will be injected using the 'maven-orb' name.
+  # (because config.yml's continue stage said "orb-name: maven-orb")
   orb-tools: circleci/orb-tools@12
 
 filters: &filters
   tags:
     only: /.*/
+executors:
+  macos:
+    macos:
+      xcode: 15.3.0
+  windows:
+    machine:
+      image: windows-server-2022-gui:current
+      resource_class: windows.medium
+      shell: bash.exe
 
 workflows:
   test-deploy:
     jobs:
-      - orb-under-test/test:
+      - maven-orb/test:
           filters: *filters
-          name: Test test job with simple use case
+          name: test job with simple use case - macos
+          app_src_directory: sample_app
+          executor: macos
+          command: test -DforkCount=4
+          pre-steps:
+            - run: brew install maven
+      - maven-orb/test:
+          filters: *filters
+          name: test job with simple use case - windows - <<matrix.checksum_location>>
+          app_src_directory: sample_app
+          executor: windows
+          command: test -DforkCount=4
+          matrix:
+            alias: test job with simple use case - windows
+            parameters:
+              checksum_location: [/tmp/maven_cache_seed, ./.maven_cache_seed]
+          pre-steps:
+            - run: |
+                choco install maven --version=3.9.10
+                echo 'export PATH="$PATH:/c/ProgramData/chocolatey/lib/maven/apache-maven-3.9.10/bin/"' >> $BASH_ENV
+      - maven-orb/test:
+          filters: *filters
+          name: test job with simple use case - linux
           app_src_directory: sample_app
           command: test -DforkCount=4
-      - orb-under-test/test:
+      - maven-orb/test:
           filters: *filters
           name: Test test job with multi-step use case
           app_src_directory: sample_app
@@ -42,7 +73,7 @@ workflows:
             - run:
                 name: list files in the workspace
                 command: find . -ls
-      - orb-under-test/test:
+      - maven-orb/test:
           filters: *filters
           name: Test test job with pom in base directory
           skip_checkout: true
@@ -59,7 +90,7 @@ workflows:
                   tar -xf /tmp/sample_app.tar
                   rm /tmp/sample_app.tar
                   find . -ls
-      - orb-under-test/test:
+      - maven-orb/test:
           filters: *filters
           name: Test test job with test_results_path having an absolute path
           app_src_directory: sample_app
@@ -69,7 +100,7 @@ workflows:
             - run:
                 name: Move test results to custom path
                 command: mv sample_app/target/surefire-reports /tmp/custom-path-to-surefire-reports
-      - orb-under-test/test:
+      - maven-orb/test:
           filters: *filters
           name: Test test job with test_results_path having a relative path
           app_src_directory: sample_app
@@ -79,24 +110,24 @@ workflows:
             - run:
                 name: Move test results to custom path
                 command: mv sample_app/target/surefire-reports sample_app/custom-path-to-surefire-reports
-      - orb-under-test/test:
+      - maven-orb/test:
           filters: *filters
           name: Test test job with custom executor
           app_src_directory: sample_app
           executor:
-            name: orb-under-test/default
+            name: maven-orb/default
             tag: '17.0-node'
             resource_class: medium
           pre-steps:
             - run:
                 name: Verify we got the right executor - one with node installed
                 command: node --version
-      - orb-under-test/parallel_test:
+      - maven-orb/parallel_test:
           filters: *filters
           name: Test parallel_test job with simple use case
           app_src_directory: sample_app
           command: test -DforkCount=4
-      - orb-under-test/parallel_test:
+      - maven-orb/parallel_test:
           filters: *filters
           name: Test parallel_test job with multi-step use case
           app_src_directory: sample_app
@@ -121,7 +152,7 @@ workflows:
             - run:
                 name: list files in the workspace
                 command: find . -ls
-      - orb-under-test/parallel_test:
+      - maven-orb/parallel_test:
           filters: *filters
           name: Test parallel_test job with pom in base directory
           skip_checkout: true
@@ -141,7 +172,9 @@ workflows:
       - orb-tools/pack:
           filters: *filters
           requires:
-            - Test test job with simple use case
+            - test job with simple use case - windows
+            - test job with simple use case - linux
+            - test job with simple use case - macos
             - Test test job with multi-step use case
             - Test test job with pom in base directory
             - Test test job with test_results_path having an absolute path

@@ -56,7 +56,10 @@ parameters:
     description: (Optional) Steps to run immediately after maven has completed, before test results are processed.
     type: steps
     default: []
-
+  checksum_location:
+    description: The path to save the checksum when calculating cache.
+    type: string
+    default: .maven_cache_seed
 steps:
   - unless:
       condition: << parameters.skip_checkout >>
@@ -69,6 +72,7 @@ steps:
       dependency_plugin_version: << parameters.dependency_plugin_version >>
       verify_dependencies: << parameters.verify_dependencies >>
       cache_name: << parameters.cache_name >>
+      checksum_location: <<parameters.checksum_location>>
       steps:
         - steps: << parameters.pre_mvn_steps >>
         - run:

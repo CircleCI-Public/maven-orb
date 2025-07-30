@@ -31,4 +31,9 @@ if [[ "$PARAM_CHECKSUM_DIR" == /* ]]; then
 else
     CHECKSUM_DIR="${PWD%/"$PARAM_APP_SRC_DIR"}/$PARAM_CHECKSUM_DIR"
 fi
-find . -name .git -prune -o -name 'pom.xml' -print0 | sort -z | xargs -0 cat > "$CHECKSUM_DIR"
+if [ "$SYS_ENV_PLATFORM" = "linux_alpine" ]; then
+  if [ "$ID" = 0 ]; then export SUDO=""; else export SUDO="sudo"; fi
+else
+  if [ "$EUID" = 0 ]; then export SUDO=""; else export SUDO="sudo"; fi
+fi
+$SUDO find . -name .git -prune -o -name 'pom.xml' -print0 | sort -z | xargs -0 cat > "$CHECKSUM_DIR"

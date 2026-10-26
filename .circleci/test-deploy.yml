@@ -11,7 +11,7 @@ filters: &filters
 executors:
   macos:
     macos:
-      xcode: 15.3.0
+      xcode: 26.4.1
   windows:
     machine:
       image: windows-server-2022-gui:current

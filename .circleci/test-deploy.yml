@@ -31,10 +31,11 @@ workflows:
             - run:
                 name: Install Maven
                 command: |
-                  # Homebrew still installs Maven, then exits 1 because
-                  # fontconfig, glib, and harfbuzz postinstall fail on this
-                  # image. Require mvn itself to be usable.
-                  brew install maven || true
+                  # This image ships Homebrew 5.1.7. Current bottles use
+                  # formula syntax that version cannot load, so postinstall
+                  # exits 1 even though the bottles pour. Update first.
+                  brew update
+                  brew install maven
                   mvn -version
       - maven-orb/test:
           filters: *filters

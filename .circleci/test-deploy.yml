@@ -9,45 +9,109 @@ filters: &filters
   tags:
     only: /.*/
 executors:
+  linux:
+    machine:
+      image: ubuntu-2404:current
+  linux-edge:
+    machine:
+      image: ubuntu-2404:edge
   macos:
     macos:
-      xcode: 15.3.0
+      xcode: 26.4.1
   windows:
     machine:
       image: windows-server-2022-gui:current
       resource_class: windows.medium
       shell: bash.exe
+  windows-edge:
+    machine:
+      image: windows-server-2022-gui:edge
+      resource_class: windows.medium
+      shell: bash.exe
+
+commands:
+  install-maven:
+    steps:
+      - run:
+          name: Install Maven if the image does not have it
+          command: |
+            if command -v mvn >/dev/null 2>&1; then
+              mvn -v
+              exit 0
+            fi
+            case "$(uname -s)" in
+              Darwin)
+                brew install maven
+                ;;
+              MINGW*|MSYS*|CYGWIN*)
+                choco install maven --version=3.9.10
+                echo 'export PATH="$PATH:/c/ProgramData/chocolatey/lib/maven/apache-maven-3.9.10/bin/"' >> "$BASH_ENV"
+                ;;
+              Linux)
+                sudo apt-get update
+                sudo apt-get install -y maven
+                ;;
+            esac
+  check-checksum-seed:
+    parameters:
+      checksum_location:
+        type: string
+      expected_poms:
+        type: integer
+        default: 1
+    steps:
+      - run:
+          name: Check the cache checksum seed contains every pom.xml
+          environment:
+            SEED: << parameters.checksum_location >>
+            EXPECTED: << parameters.expected_poms >>
+          command: |
+            case "$(uname -s)" in
+              MINGW*|MSYS*|CYGWIN*)
+                if [[ "$SEED" == /* ]]; then SEED="/c$SEED"; fi
+                ;;
+            esac
+            FOUND="$(grep -c '<artifactId>my-app</artifactId>' "$SEED" || true)"
+            echo "Found $FOUND pom.xml in $SEED, expected $EXPECTED"
+            [ "$FOUND" = "$EXPECTED" ]
 
 workflows:
   test-deploy:
     jobs:
       - maven-orb/test:
           filters: *filters
-          name: test job with simple use case - macos
+          name: test job with simple use case - <<matrix.executor>> - <<matrix.checksum_location>>
           app_src_directory: sample_app
-          executor: macos
-          command: test -DforkCount=4
-          pre-steps:
-            - run: brew install maven
-      - maven-orb/test:
-          filters: *filters
-          name: test job with simple use case - windows - <<matrix.checksum_location>>
-          app_src_directory: sample_app
-          executor: windows
           command: test -DforkCount=4
           matrix:
-            alias: test job with simple use case - windows
+            alias: test job with simple use case
             parameters:
+              executor: [maven-orb/default, linux, linux-edge, macos, windows, windows-edge]
               checksum_location: [/tmp/maven_cache_seed, ./.maven_cache_seed]
           pre-steps:
-            - run: |
-                choco install maven --version=3.9.10
-                echo 'export PATH="$PATH:/c/ProgramData/chocolatey/lib/maven/apache-maven-3.9.10/bin/"' >> $BASH_ENV
+            - install-maven
+          pre_mvn_steps:
+            - check-checksum-seed:
+                checksum_location: << matrix.checksum_location >>
       - maven-orb/test:
           filters: *filters
-          name: test job with simple use case - linux
+          name: Test test job with a root-owned directory in the workspace
+          executor: linux
           app_src_directory: sample_app
-          command: test -DforkCount=4
+          command: test
+          skip_checkout: true
+          pre-steps:
+            - checkout
+            - install-maven
+            - run:
+                name: Add a pom.xml the job user cannot read
+                command: |
+                  sudo mkdir -m 700 sample_app/root-only
+                  sudo cp sample_app/pom.xml sample_app/root-only/pom.xml
+          pre_mvn_steps:
+            - check-checksum-seed:
+                checksum_location: .maven_cache_seed
+                expected_poms: 2
       - maven-orb/test:
           filters: *filters
           name: Test test job with multi-step use case
@@ -172,9 +236,8 @@ workflows:
       - orb-tools/pack:
           filters: *filters
           requires:
-            - test job with simple use case - windows
-            - test job with simple use case - linux
-            - test job with simple use case - macos
+            - test job with simple use case
+            - Test test job with a root-owned directory in the workspace
             - Test test job with multi-step use case
             - Test test job with pom in base directory
             - Test test job with test_results_path having an absolute path

@@ -9,7 +9,7 @@ detect_os() {
     darwin*)
       PLATFORM=macos
       ;;
-    msys*|cygwin*)
+    msys*|cygwin*|mingw*)
       PLATFORM=windows
       ;;
     *)
@@ -31,9 +31,20 @@ if [[ "$PARAM_CHECKSUM_DIR" == /* ]]; then
 else
     CHECKSUM_DIR="${PWD%/"$PARAM_APP_SRC_DIR"}/$PARAM_CHECKSUM_DIR"
 fi
-if [ "$SYS_ENV_PLATFORM" = "linux_alpine" ]; then
-  if [ "$ID" = 0 ]; then export SUDO=""; else export SUDO="sudo"; fi
-else
-  if [ "$EUID" = 0 ]; then export SUDO=""; else export SUDO="sudo"; fi
+# Windows Git Bash is not root, and CircleCI's Windows images have no POSIX
+# sudo. Newer Windows ships sudo.exe, which is a UAC elevator — do not probe
+# for a binary named sudo on this platform. Its PATH also resolves find and
+# sort to C:\Windows\System32\FIND.EXE and SORT.EXE, so use the POSIX ones.
+SUDO=""
+FIND="find"
+SORT="sort"
+if [[ "$PLATFORM" == "windows" ]]; then
+  FIND=/usr/bin/find
+  SORT=/usr/bin/sort
+elif [ "$EUID" != 0 ] && sudo -n true >/dev/null 2>&1; then
+  SUDO="sudo"
 fi
-$SUDO find . -name .git -prune -o -name 'pom.xml' -print0 | sort -z | xargs -0 cat > "$CHECKSUM_DIR"
+set -o pipefail
+# Same prefix on xargs: a root find can list a pom.xml the job user cannot cat.
+# The ">" redirect stays in this shell, so the seed file is still user-owned.
+$SUDO "$FIND" . -name .git -prune -o -name 'pom.xml' -print0 | "$SORT" -z | $SUDO xargs -0 cat > "$CHECKSUM_DIR"

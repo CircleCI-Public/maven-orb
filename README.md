@@ -15,6 +15,8 @@ workflows:
 
 The built in test job is automatically compatible with standard Maven projects and is fully customizable with custom steps.
 
+> **Starting a new config?** Use the [`setup-java` Function](https://github.com/circleci-functions/setup-java#readme) with `cache-dependencies: maven` instead. See the [Functions overview](https://circleci.com/docs/functions/functions-intro/) and the [Functions catalog](https://circleci.com/docs/functions/functions-catalog/). This orb is still maintained for existing pipelines.
+
 ## Usage
 
 Example use-cases are provided on the orb [registry page](https://circleci.com/orbs/registry/orb/circleci/maven#usage-examples). Source for these examples can be found within the `src/examples` directory.

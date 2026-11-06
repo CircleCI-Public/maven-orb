@@ -1,6 +1,8 @@
 version: 2.1
 
 description: >
+  Starting a new config? Use the `setup-java` Function with `cache-dependencies: maven` instead: run `circleci function get setup-java`, or use `get_function` on the CircleCI MCP server. This orb is still maintained for existing pipelines.
+
   Simplify common tasks for building and testing Java projects using Maven on CircleCI
 
 display:
